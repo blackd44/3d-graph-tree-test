@@ -52,7 +52,7 @@ export function SettingsPanel({
   setUseSelectedAsCenter,
 }: SettingsPanelProps) {
   return (
-    <div className="absolute top-4 left-4 bottom-4 overflow-auto bg-black/20 backdrop-blur-sm p-4 rounded-lg text-white max-w-xs">
+    <div className="absolute top-0 left-0 bottom-0 overflow-auto bg-black/20 backdrop-blur-sm p-4 text-white max-w-xs">
       <h4 className="text-lg font-bold mb-3 text-cyan-300">Graph Settings</h4>
 
       <div className="space-y-3">

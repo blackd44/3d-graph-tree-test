@@ -4,10 +4,13 @@ import { OrbitControls } from "@react-three/drei";
 
 import { input } from "./data";
 import { generateMoves, computeAxes, mapNodeTo3D, applyForces } from "./utils";
-import { Graph, BoardPreview, SettingsPanel } from "./components";
+import { Graph, BoardPreview, BoardEditor, SettingsPanel } from "./components";
+import type { InputData } from "./types";
 
 // Main Viewer component
 export default function Viewer() {
+  const [boardData, setBoardData] = useState<InputData>(input);
+  const [visualizationData, setVisualizationData] = useState<InputData>(input);
   const [nodeRadius, setNodeRadius] = useState(0.08);
   const [iterations, setIterations] = useState(100);
   const [forceStrength, setForceStrength] = useState(1);
@@ -27,15 +30,15 @@ export default function Viewer() {
 
   // Memoized computations for better performance
   const { nodes, edges } = useMemo(
-    () => generateMoves(input.blocks, input.W, input.H),
-    []
+    () => generateMoves(visualizationData.blocks, visualizationData.W, visualizationData.H),
+    [visualizationData]
   );
 
-  const axes = useMemo(() => computeAxes(nodes, input.blocks), [nodes]);
+  const axes = useMemo(() => computeAxes(nodes, visualizationData.blocks), [nodes, visualizationData.blocks]);
 
   const initialPositions = useMemo(
-    () => nodes.map((n) => mapNodeTo3D(n, input.blocks, axes)),
-    [nodes, axes]
+    () => nodes.map((n) => mapNodeTo3D(n, visualizationData.blocks, axes)),
+    [nodes, visualizationData.blocks, axes]
   );
 
   const positions = useMemo(
@@ -110,14 +113,22 @@ export default function Viewer() {
       <div className="p-4 absolute top-0 right-0 bg-black/20 backdrop-blur-sm rounded-bl-lg">
         <h3 className="text-white text-lg font-bold mb-2">Board Preview</h3>
         <BoardPreview
-          W={input.W}
-          H={input.H}
-          blocks={input.blocks}
+          W={visualizationData.W}
+          H={visualizationData.H}
+          blocks={visualizationData.blocks}
           state={nodes[selected]}
         />
         <div className="mt-2 text-white text-sm">
           Node: {selected + 1}/{nodes.length}
         </div>
+      </div>
+
+      <div className="p-4 absolute bottom-0 right-0 bg-black/20 backdrop-blur-sm rounded-tl-lg">
+        <BoardEditor
+          initialData={boardData}
+          onDataChange={setBoardData}
+          onVisualize={setVisualizationData}
+        />
       </div>
 
       <SettingsPanel
