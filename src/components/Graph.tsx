@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { AnimatedNode } from "./AnimatedNode";
-import { EnhancedEdges } from "./EnhancedEdges";
+import { Edges } from "./Edges";
 
 interface GraphProps {
   positions: [number, number, number][];
@@ -44,7 +44,7 @@ export function Graph({
       {/* Fog for depth perception */}
       <fog attach="fog" args={["#202030", 5, 25]} />
 
-      <EnhancedEdges
+      <Edges
         positions={positions}
         edges={edges}
         edgeColor={edgeColor}

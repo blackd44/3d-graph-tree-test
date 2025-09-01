@@ -95,8 +95,8 @@ export function SettingsPanel({
           </label>
           <input
             type="range"
-            min="-1"
-            max="1"
+            min="-5"
+            max="5"
             step="0.05"
             value={forceStrength}
             onChange={(e) => setForceStrength(parseFloat(e.target.value))}
