@@ -2,6 +2,11 @@
 
 A mesmerizing 3D visualization tool that brings sliding block puzzles to life! Watch as every possible move unfolds in an interactive 3D tree, revealing the hidden complexity and beauty of these classic puzzles.
 
+## Screenshots
+
+<img src="public/01-easy.png" width="49.5%" /> <img src="public/02-normal.png" width="49.5%" /> 
+<img src="public/03-hard.png" width="99.3%" />
+
 ## What is this?
 
 Imagine you have a sliding block puzzle (like the classic "Rush Hour" game) where you need to move blocks around to free a specific piece. This tool doesn't just solve the puzzle - it shows you **every single possible move** in a stunning 3D visualization.

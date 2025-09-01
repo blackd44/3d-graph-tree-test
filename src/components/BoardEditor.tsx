@@ -477,7 +477,7 @@ export const BoardEditor: React.FC<BoardEditorProps> = ({
       )}
 
       <div className="grid grid-cols-2 gap-2 ">
-        <div className="flex gap-px rounded-xl bg-white/30">
+        <div className="flex gap-px rounded-xl bg-white/30 hover:bg-transparent">
           <button
             onClick={() => {
               const updatedData = { ...data, W: data.W - 1 };
@@ -497,7 +497,7 @@ export const BoardEditor: React.FC<BoardEditorProps> = ({
             W+
           </button>
         </div>
-        <div className="flex gap-px rounded-xl bg-white/30">
+        <div className="flex gap-px rounded-xl bg-white/30 hover:bg-transparent">
           <button
             onClick={() => {
               const updatedData = { ...data, H: data.H - 1 };
