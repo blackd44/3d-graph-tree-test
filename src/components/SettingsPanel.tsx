@@ -1,12 +1,14 @@
 interface SettingsPanelProps {
-  minDistance: number;
-  setMinDistance: (value: number) => void;
   nodeRadius: number;
   setNodeRadius: (value: number) => void;
   iterations: number;
   setIterations: (value: number) => void;
   forceStrength: number;
   setForceStrength: (value: number) => void;
+  centerForceStrength: number;
+  setCenterForceStrength: (value: number) => void;
+  fixedEdgeLength: number;
+  setFixedEdgeLength: (value: number) => void;
   nodeColor: string;
   setNodeColor: (value: string) => void;
   activeColor: string;
@@ -17,17 +19,23 @@ interface SettingsPanelProps {
   setNodeOpacity: (value: number) => void;
   edgeOpacity: number;
   setEdgeOpacity: (value: number) => void;
+  nodeBrightness: number;
+  setNodeBrightness: (value: number) => void;
+  useSelectedAsCenter: boolean;
+  setUseSelectedAsCenter: (value: boolean) => void;
 }
 
 export function SettingsPanel({
-  minDistance,
-  setMinDistance,
   nodeRadius,
   setNodeRadius,
   iterations,
   setIterations,
   forceStrength,
   setForceStrength,
+  centerForceStrength,
+  setCenterForceStrength,
+  fixedEdgeLength,
+  setFixedEdgeLength,
   nodeColor,
   setNodeColor,
   activeColor,
@@ -38,26 +46,16 @@ export function SettingsPanel({
   setNodeOpacity,
   edgeOpacity,
   setEdgeOpacity,
+  nodeBrightness,
+  setNodeBrightness,
+  useSelectedAsCenter,
+  setUseSelectedAsCenter,
 }: SettingsPanelProps) {
   return (
-    <div className="absolute top-4 left-4 bg-black/20 backdrop-blur-sm p-4 rounded-lg text-white max-w-xs">
+    <div className="absolute top-4 left-4 bottom-4 overflow-auto bg-black/20 backdrop-blur-sm p-4 rounded-lg text-white max-w-xs">
       <h4 className="text-lg font-bold mb-3 text-cyan-300">Graph Settings</h4>
 
       <div className="space-y-3">
-        <div>
-          <label className="block text-sm mb-1">
-            Min Distance: {minDistance.toFixed(2)}
-          </label>
-          <input
-            type="range"
-            min="0.1"
-            max="2"
-            step="0.05"
-            value={minDistance}
-            onChange={(e) => setMinDistance(parseFloat(e.target.value))}
-            className="w-full accent-cyan-400"
-          />
-        </div>
 
         <div>
           <label className="block text-sm mb-1">
@@ -95,8 +93,8 @@ export function SettingsPanel({
           </label>
           <input
             type="range"
-            min="-5"
-            max="5"
+            min="-0.5"
+            max="1.5"
             step="0.05"
             value={forceStrength}
             onChange={(e) => setForceStrength(parseFloat(e.target.value))}
@@ -104,6 +102,42 @@ export function SettingsPanel({
           />
           <div className="text-xs text-gray-300 mt-1">
             Negative = Repulsion, Positive = Attraction
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">
+            Center Force: {centerForceStrength.toFixed(2)}
+          </label>
+          <input
+            type="range"
+            min="0"
+            max="0.8"
+            step="0.05"
+            value={centerForceStrength}
+            onChange={(e) => setCenterForceStrength(parseFloat(e.target.value))}
+            className="w-full accent-green-400"
+          />
+          <div className="text-xs text-gray-300 mt-1">
+            Pushes nodes outward from center
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">
+            Fixed Edge Length: {fixedEdgeLength.toFixed(2)}
+          </label>
+          <input
+            type="range"
+            min="0.5"
+            max="2"
+            step="0.1"
+            value={fixedEdgeLength}
+            onChange={(e) => setFixedEdgeLength(parseFloat(e.target.value))}
+            className="w-full accent-cyan-400"
+          />
+          <div className="text-xs text-gray-300 mt-1">
+            All edges maintain this exact length
           </div>
         </div>
 
@@ -167,6 +201,48 @@ export function SettingsPanel({
               className="w-full accent-orange-400"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="block text-xs mb-1">
+            Node Brightness: {nodeBrightness.toFixed(2)}
+          </label>
+          <input
+            type="range"
+            min="0"
+            max="0.5"
+            step="0.01"
+            value={nodeBrightness}
+            onChange={(e) => setNodeBrightness(parseFloat(e.target.value))}
+            className="w-full accent-yellow-400"
+          />
+          <div className="text-xs text-gray-300 mt-1">
+            Controls node glow intensity
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <label className="block text-sm">
+            Rotation Center
+          </label>
+          <div className="flex items-center space-x-2">
+            <span className="text-xs text-gray-300">Center</span>
+            <button
+              type="button"
+              onClick={() => setUseSelectedAsCenter(!useSelectedAsCenter)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 !bg-white/20`}
+            >
+              <div
+                className={`block size-4 aspect-square transform rounded-full bg-white transition-transform ${
+                  useSelectedAsCenter ? 'translate-x-1' : '-translate-x-4'
+                }`}
+              />
+            </button>
+            <span className="text-xs text-gray-300">Selected</span>
+          </div>
+        </div>
+        <div className="text-xs text-gray-300">
+          {useSelectedAsCenter ? 'Camera orbits around selected node' : 'Camera orbits around graph centroid'}
         </div>
       </div>
     </div>

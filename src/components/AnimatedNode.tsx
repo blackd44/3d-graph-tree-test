@@ -10,6 +10,7 @@ interface AnimatedNodeProps {
   nodeColor: string;
   activeColor: string;
   nodeOpacity: number;
+  nodeBrightness: number;
 }
 
 export function AnimatedNode({
@@ -20,6 +21,7 @@ export function AnimatedNode({
   nodeColor,
   activeColor,
   nodeOpacity,
+  nodeBrightness,
 }: AnimatedNodeProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
@@ -64,7 +66,7 @@ export function AnimatedNode({
         roughness={0.3}
         metalness={0.2}
         emissive={isSelected ? activeColor : nodeColor}
-        emissiveIntensity={isSelected ? 0.2 : 0.05}
+        emissiveIntensity={isSelected ? 0.2 : nodeBrightness}
       />
     </mesh>
   );

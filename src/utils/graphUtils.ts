@@ -112,9 +112,10 @@ export function mapNodeTo3D(
 export function applyForces(
   positions: [number, number, number][],
   edges: [number, number][],
-  minDistance = 1.5,
   iterations = 150,
-  springStrength = 0.1
+  springStrength = 0.1,
+  centerForceStrength = 0.0,
+  fixedEdgeLength = 2.0
 ) {
   const n = positions.length;
   const pos = positions.map((p) => [...p] as [number, number, number]);
@@ -148,9 +149,9 @@ export function applyForces(
 
         if (isConnected(i, j)) {
           // ATTRACTION: Only between connected nodes (spring force)
-          const restLength = minDistance * 1.5; // Ideal edge length
-          const displacement = dist - restLength;
-          const springForce = springStrength * displacement;
+          const displacement = dist - fixedEdgeLength;
+          // Make spring force much stronger to resist other forces
+          const springForce = springStrength * 10 * displacement;
 
           const fx = (dx / dist) * springForce;
           const fy = (dy / dist) * springForce;
@@ -164,7 +165,7 @@ export function applyForces(
           forces[j][2] -= fz;
         } else {
           // REPULSION: Only between unconnected nodes (Coulomb force)
-          const repulsionStrength = (minDistance * minDistance) / distSq;
+          const repulsionStrength = (fixedEdgeLength * fixedEdgeLength) / distSq;
           const fx = (dx / dist) * repulsionStrength;
           const fy = (dy / dist) * repulsionStrength;
           const fz = (dz / dist) * repulsionStrength;
@@ -175,6 +176,28 @@ export function applyForces(
           forces[j][0] += fx;
           forces[j][1] += fy;
           forces[j][2] += fz;
+        }
+      }
+    }
+
+    // Apply center force pushing outward from graph centroid
+    if (centerForceStrength > 0) {
+      // Calculate the center of all node positions
+      const centerX = pos.reduce((sum, p) => sum + p[0], 0) / n;
+      const centerY = pos.reduce((sum, p) => sum + p[1], 0) / n;
+      const centerZ = pos.reduce((sum, p) => sum + p[2], 0) / n;
+      
+      for (let i = 0; i < n; i++) {
+        const dx = pos[i][0] - centerX;
+        const dy = pos[i][1] - centerY;
+        const dz = pos[i][2] - centerZ;
+        const distFromCenter = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        
+        if (distFromCenter > 0.001) {
+          const centerForce = centerForceStrength * distFromCenter;
+          forces[i][0] += (dx / distFromCenter) * centerForce;
+          forces[i][1] += (dy / distFromCenter) * centerForce;
+          forces[i][2] += (dz / distFromCenter) * centerForce;
         }
       }
     }
@@ -193,6 +216,30 @@ export function applyForces(
       pos[i][0] *= damping;
       pos[i][1] *= damping;
       pos[i][2] *= damping;
+    }
+
+    // Hard constraint: enforce fixed edge length for connected nodes
+    for (const [i, j] of edges) {
+      const dx = pos[j][0] - pos[i][0];
+      const dy = pos[j][1] - pos[i][1];
+      const dz = pos[j][2] - pos[i][2];
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      
+      if (dist > 0.001) {
+        const scale = fixedEdgeLength / dist;
+        const midX = (pos[i][0] + pos[j][0]) / 2;
+        const midY = (pos[i][1] + pos[j][1]) / 2;
+        const midZ = (pos[i][2] + pos[j][2]) / 2;
+        
+        // Move both nodes to maintain exact edge length
+        pos[i][0] = midX - (dx * scale) / 2;
+        pos[i][1] = midY - (dy * scale) / 2;
+        pos[i][2] = midZ - (dz * scale) / 2;
+        
+        pos[j][0] = midX + (dx * scale) / 2;
+        pos[j][1] = midY + (dy * scale) / 2;
+        pos[j][2] = midZ + (dz * scale) / 2;
+      }
     }
   }
 

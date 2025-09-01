@@ -13,6 +13,7 @@ interface GraphProps {
   edgeColor: string;
   nodeOpacity: number;
   edgeOpacity: number;
+  nodeBrightness: number;
 }
 
 export function Graph({
@@ -26,6 +27,7 @@ export function Graph({
   edgeColor,
   nodeOpacity,
   edgeOpacity,
+  nodeBrightness,
 }: GraphProps) {
   const handleNodeClick = useCallback(
     (index: number) => {
@@ -36,13 +38,6 @@ export function Graph({
 
   return (
     <group>
-      {/* Enhanced lighting for better visual depth */}
-      <ambientLight intensity={0.4} />
-      <pointLight position={[10, 10, 10]} intensity={0.8} />
-      <pointLight position={[-10, -10, -10]} intensity={0.3} color="#4488ff" />
-
-      {/* Fog for depth perception */}
-      <fog attach="fog" args={["#202030", 5, 25]} />
 
       <Edges
         positions={positions}
@@ -53,16 +48,17 @@ export function Graph({
       />
 
       {positions.map((pos, i) => (
-        <AnimatedNode
-          key={i}
-          position={pos}
-          isSelected={i === selected}
-          onClick={() => handleNodeClick(i)}
-          nodeRadius={nodeRadius}
-          nodeColor={nodeColor}
-          activeColor={activeColor}
-          nodeOpacity={nodeOpacity}
-        />
+                  <AnimatedNode
+            key={i}
+            position={pos}
+            isSelected={i === selected}
+            onClick={() => handleNodeClick(i)}
+            nodeRadius={nodeRadius}
+            nodeColor={nodeColor}
+            activeColor={activeColor}
+            nodeOpacity={nodeOpacity}
+            nodeBrightness={nodeBrightness}
+          />
       ))}
     </group>
   );

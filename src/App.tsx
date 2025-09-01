@@ -8,10 +8,11 @@ import { Graph, BoardPreview, SettingsPanel } from "./components";
 
 // Main Viewer component
 export default function Viewer() {
-  const [minDistance, setMinDistance] = useState(0.6);
-  const [nodeRadius, setNodeRadius] = useState(0.1);
+  const [nodeRadius, setNodeRadius] = useState(0.08);
   const [iterations, setIterations] = useState(100);
   const [forceStrength, setForceStrength] = useState(1);
+  const [centerForceStrength, setCenterForceStrength] = useState(0.5);
+  const [fixedEdgeLength, setFixedEdgeLength] = useState(0.5);
 
   // Colors and opacity
   const [nodeColor, setNodeColor] = useState("#86e8fe");
@@ -19,6 +20,8 @@ export default function Viewer() {
   const [edgeColor, setEdgeColor] = useState("#9c9c9c");
   const [nodeOpacity, setNodeOpacity] = useState(0.8);
   const [edgeOpacity, setEdgeOpacity] = useState(0.6);
+  const [nodeBrightness, setNodeBrightness] = useState(0.15);
+  const [useSelectedAsCenter, setUseSelectedAsCenter] = useState(false);
 
   const [selected, setSelected] = useState(0);
 
@@ -36,11 +39,36 @@ export default function Viewer() {
   );
 
   const positions = useMemo(
-    () => applyForces([...initialPositions], edges, minDistance, iterations, forceStrength),
-    [initialPositions, edges, minDistance, iterations, forceStrength]
+    () =>
+      applyForces(
+        [...initialPositions],
+        edges,
+        iterations,
+        forceStrength,
+        centerForceStrength,
+        fixedEdgeLength
+      ),
+    [
+      initialPositions,
+      edges,
+      iterations,
+      forceStrength,
+      centerForceStrength,
+      fixedEdgeLength,
+    ]
   );
 
-  const target = useMemo(() => positions[selected], [positions, selected]);
+  const target = useMemo(() => {
+    if (useSelectedAsCenter) {
+      return positions[selected];
+    } else {
+      // Calculate the center of all node positions
+      const centerX = positions.reduce((sum, pos) => sum + pos[0], 0) / positions.length;
+      const centerY = positions.reduce((sum, pos) => sum + pos[1], 0) / positions.length;
+      const centerZ = positions.reduce((sum, pos) => sum + pos[2], 0) / positions.length;
+      return [centerX, centerY, centerZ] as [number, number, number];
+    }
+  }, [positions, selected, useSelectedAsCenter]);
 
   const handleNodeSelect = useCallback((index: number) => {
     setSelected(index);
@@ -65,6 +93,7 @@ export default function Viewer() {
             edgeColor={edgeColor}
             nodeOpacity={nodeOpacity}
             edgeOpacity={edgeOpacity}
+            nodeBrightness={nodeBrightness}
           />
           <OrbitControls
             target={target}
@@ -72,8 +101,9 @@ export default function Viewer() {
             dampingFactor={0.05}
             maxDistance={20}
             minDistance={2}
+            maxZoom={100}
           />
-          <axesHelper args={[3]} />
+          {/* <axesHelper args={[3]} /> */}
         </Canvas>
       </div>
 
@@ -91,14 +121,16 @@ export default function Viewer() {
       </div>
 
       <SettingsPanel
-        minDistance={minDistance}
-        setMinDistance={setMinDistance}
         nodeRadius={nodeRadius}
         setNodeRadius={setNodeRadius}
         iterations={iterations}
         setIterations={setIterations}
         forceStrength={forceStrength}
         setForceStrength={setForceStrength}
+        centerForceStrength={centerForceStrength}
+        setCenterForceStrength={setCenterForceStrength}
+        fixedEdgeLength={fixedEdgeLength}
+        setFixedEdgeLength={setFixedEdgeLength}
         nodeColor={nodeColor}
         setNodeColor={setNodeColor}
         activeColor={activeColor}
@@ -109,6 +141,10 @@ export default function Viewer() {
         setNodeOpacity={setNodeOpacity}
         edgeOpacity={edgeOpacity}
         setEdgeOpacity={setEdgeOpacity}
+        nodeBrightness={nodeBrightness}
+        setNodeBrightness={setNodeBrightness}
+        useSelectedAsCenter={useSelectedAsCenter}
+        setUseSelectedAsCenter={setUseSelectedAsCenter}
       />
     </div>
   );
