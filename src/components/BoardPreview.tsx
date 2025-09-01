@@ -1,4 +1,4 @@
-import { Block, MoveState } from "../types";
+import type { Block, MoveState } from "../types";
 
 interface BoardPreviewProps {
   W: number;

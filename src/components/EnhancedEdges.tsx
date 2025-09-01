@@ -19,7 +19,7 @@ export function EnhancedEdges({
 }: EnhancedEdgesProps) {
   const linesRef = useRef<THREE.Group>(null);
 
-  const edgeGeometries = useMemo(() => {
+  const edgeGeometries = useMemo<THREE.BufferGeometry<THREE.NormalBufferAttributes, THREE.BufferGeometryEventMap>[]>(() => {
     return edges.map(([s, t]) => {
       const points = [
         new THREE.Vector3(...positions[s]),
